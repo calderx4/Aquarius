@@ -1,0 +1,53 @@
+id: gen-reason-001
+name: "通用 - 多文件推理"
+category: general
+difficulty: medium
+
+input:
+  prompt: >
+    请阅读工作目录下的三个文件：project_a.txt、project_b.txt、project_c.txt，
+    回答问题：这三个项目分别是什么技术栈？
+    每个项目的负责人是谁？哪个项目的星标数最多？
+
+    请用以下格式回答（每行一个项目）：
+    项目名: 技术栈, 负责人, 星标数
+
+    将答案写入 answer.txt 文件。
+  workspace_files:
+    project_a.txt: |
+      Project Alpha
+      ============
+      - Language: Python 3.12
+      - Framework: FastAPI + Pydantic
+      - Database: PostgreSQL
+      - Lead: Zhang Wei
+      - GitHub Stars: 1200
+      - Description: A high-performance API gateway
+    project_b.txt: |
+      Project Beta
+      ============
+      - Runtime: Node.js 20
+      - Framework: Next.js 14 + TypeScript
+      - Database: MongoDB
+      - Lead: Li Na
+      - GitHub Stars: 3500
+      - Description: Full-stack web application framework
+    project_c.txt: |
+      Project Gamma
+      =============
+      - Language: Go 1.22
+      - Framework: Gin + GORM
+      - Database: MySQL
+      - Lead: Wang Fang
+      - GitHub Stars: 800
+      - Description: Microservice orchestration platform
+
+scoring:
+  method: functional
+  command: "cd {{workspace}} && grep 'Beta' answer.txt && grep -c 'Python' answer.txt && grep -c 'Node' answer.txt && grep -c 'Go' answer.txt"
+  pass_pattern: "3500"
+  command_timeout: 30
+
+constraints:
+  max_iterations: 10
+  timeout_seconds: 60

@@ -1,0 +1,35 @@
+id: gen-plan-001
+name: "通用 - 多步任务计划"
+category: general
+difficulty: medium
+
+input:
+  prompt: >
+    我需要为一个中小型 SaaS 产品设计数据迁移方案。
+    当前状态：MySQL 单库，50 张表，约 2000 万行数据，部分表缺少索引。
+    目标：迁移到 PostgreSQL，同时做数据清洗（去重、修正格式），停机窗口不超过 4 小时。
+
+    请给出一个详细的迁移计划，包括：
+    1. 准备阶段的具体步骤
+    2. 迁移执行阶段的步骤
+    3. 验证回滚方案
+    4. 时间估算和风险评估
+
+    输出为结构化文本，每个步骤包含：步骤名、操作内容、预计耗时、依赖关系。
+  workspace_files: {}
+
+scoring:
+  method: keyword_check
+  required_keywords:
+    - "准备"
+    - "迁移"
+    - "验证"
+    - "回滚"
+    - "索引"
+    - "去重"
+    - "停机"
+    - "PostgreSQL"
+
+constraints:
+  max_iterations: 10
+  timeout_seconds: 120

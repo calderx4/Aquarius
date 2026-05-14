@@ -1,0 +1,68 @@
+id: code-debug-002
+name: "Debug - 修复 JSON 解析器"
+category: code
+difficulty: medium
+
+input:
+  prompt: >
+    任务：修复 json_parser.py 中 parse_json_string 函数的 bug。
+
+    问题：当前的 JSON 字符串解析器在处理某些合法输入时会失败。
+
+    要求：
+    - 找到并修复 bug（不要修改函数签名和文件名）
+    - 提示：检查转义字符处理逻辑是否有遗漏
+    - 修复后确保所有测试通过
+
+    完成后运行 test_parser.py 验证。
+  workspace_files:
+    json_parser.py: |
+      def parse_json_string(s):
+          """Parse a JSON string value (content between quotes)."""
+          if not s.startswith('"') or not s.endswith('"'):
+              raise ValueError("Not a valid JSON string")
+          content = s[1:-1]
+          result = ""
+          i = 0
+          while i < len(content):
+              if content[i] == '\\':
+                  if i + 1 < len(content):
+                      next_char = content[i + 1]
+                      if next_char == 'n':
+                          result += '\n'
+                      elif next_char == 't':
+                          result += '\t'
+                      elif next_char == '"':
+                          result += '"'
+                      # BUG: missing handling for '\\'
+                      i += 2
+                  else:
+                      result += '\\'
+                      i += 1
+              else:
+                  result += content[i]
+                  i += 1
+          return result
+    test_parser.py: |
+      import sys
+      sys.path.insert(0, '.')
+      from json_parser import parse_json_string
+
+      assert parse_json_string('"hello"') == "hello"
+      assert parse_json_string('""') == ""
+      assert parse_json_string('"hello world"') == "hello world"
+      assert parse_json_string('"line1\\nline2"') == "line1\nline2"
+      assert parse_json_string('"tab\\there"') == "tab\there"
+      assert parse_json_string('"say \\"hi\\""') == 'say "hi"'
+      assert parse_json_string('"path\\\\file"') == "path\\file"
+      assert parse_json_string('"a\\nb\\tc"') == "a\nb\tc"
+      print("ALL TESTS PASSED")
+
+scoring:
+  method: functional
+  command: "cd {{workspace}} && python test_parser.py"
+  pass_pattern: "ALL TESTS PASSED"
+
+constraints:
+  max_iterations: 15
+  timeout_seconds: 120

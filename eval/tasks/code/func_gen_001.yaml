@@ -1,0 +1,41 @@
+id: code-func-gen-001
+name: "函数生成 - 斐波那契"
+category: code
+difficulty: easy
+
+input:
+  prompt: >
+    任务：创建一个 Python 文件 fib.py，在其中实现 fibonacci 函数。
+
+    需求：
+    - 函数名：fibonacci
+    - 参数：一个整数 n
+    - 返回值：一个列表，包含前 n 个斐波那契数（从 0 开始）
+      - fibonacci(0) 返回 []
+      - fibonacci(1) 返回 [0]
+      - fibonacci(2) 返回 [0, 1]
+      - fibonacci(5) 返回 [0, 1, 1, 2, 3]
+    - 将文件写入当前目录的 fib.py
+
+    创建完成后运行 test_fib.py 验证结果。
+  workspace_files:
+    test_fib.py: |
+      import sys
+      sys.path.insert(0, '.')
+      from fib import fibonacci
+
+      assert fibonacci(0) == [], f"fibonacci(0) should be [], got {fibonacci(0)}"
+      assert fibonacci(1) == [0], f"fibonacci(1) should be [0], got {fibonacci(1)}"
+      assert fibonacci(2) == [0, 1], f"fibonacci(2) should be [0, 1], got {fibonacci(2)}"
+      assert fibonacci(5) == [0, 1, 1, 2, 3], f"fibonacci(5) should be [0, 1, 1, 2, 3], got {fibonacci(5)}"
+      assert fibonacci(10) == [0, 1, 1, 2, 3, 5, 8, 13, 21, 34], f"fibonacci(10) wrong"
+      print("ALL TESTS PASSED")
+
+scoring:
+  method: functional
+  command: "cd {{workspace}} && python test_fib.py"
+  pass_pattern: "ALL TESTS PASSED"
+
+constraints:
+  max_iterations: 15
+  timeout_seconds: 120

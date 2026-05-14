@@ -1,0 +1,69 @@
+id: code-edit-001
+name: "代码编辑 - 添加错误处理"
+category: code
+difficulty: medium
+
+input:
+  prompt: >
+    任务：给 calculator.py 中的 calculate 函数添加错误处理。
+
+    问题：当前函数在遇到错误输入时会直接抛异常，没有友好的错误处理。
+
+    要求：
+    - 修改 calculate 函数，捕获并返回错误信息字符串
+    - 错误处理规则：
+      - 除零时返回字符串 "Error: division by zero"
+      - 无效操作符时返回字符串 "Error: invalid operator"
+      - 非数字输入时返回字符串 "Error: invalid number"
+      - 空输入时返回字符串 "Error: empty input"
+    - 保持函数签名不变
+    - 合法输入的行为必须与原函数完全一致
+
+    完成后运行 test_calc.py 验证。
+  workspace_files:
+    calculator.py: |
+      def calculate(a_str, op, b_str):
+          a = float(a_str)
+          b = float(b_str)
+          if op == "+":
+              return a + b
+          elif op == "-":
+              return a - b
+          elif op == "*":
+              return a * b
+          elif op == "/":
+              return a / b
+    test_calc.py: |
+      import sys
+      sys.path.insert(0, '.')
+      from calculator import calculate
+
+      # Original functionality still works (returns float)
+      assert calculate("2", "+", "3") == 5.0
+      assert calculate("10", "-", "4") == 6.0
+      assert calculate("3", "*", "5") == 15.0
+      assert calculate("10", "/", "2") == 5.0
+
+      # Error handling (returns string)
+      result = calculate("1", "/", "0")
+      assert isinstance(result, str) and "Error" in result and "division by zero" in result.lower(), f"got: {result}"
+
+      result = calculate("1", "^", "2")
+      assert isinstance(result, str) and "Error" in result and "invalid operator" in result.lower(), f"got: {result}"
+
+      result = calculate("abc", "+", "2")
+      assert isinstance(result, str) and "Error" in result and "invalid number" in result.lower(), f"got: {result}"
+
+      result = calculate("", "+", "2")
+      assert isinstance(result, str) and "Error" in result and "empty" in result.lower(), f"got: {result}"
+
+      print("ALL_TESTS_PASSED")
+
+scoring:
+  method: functional
+  command: "cd {{workspace}} && python test_calc.py"
+  pass_pattern: "ALL_TESTS_PASSED"
+
+constraints:
+  max_iterations: 15
+  timeout_seconds: 120

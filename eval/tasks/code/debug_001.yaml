@@ -1,0 +1,46 @@
+id: code-debug-001
+name: "Debug - 修复排序函数"
+category: code
+difficulty: medium
+
+input:
+  prompt: >
+    任务：修复 sort.py 中 bubble_sort 函数的 bug。
+
+    问题：当前实现的 bubble_sort 有 bug，排序结果不正确。
+
+    要求：
+    - 找到并修复 bug（不要修改函数签名和文件名）
+    - 修复后确保所有测试通过
+
+    完成后运行 test_sort.py 验证。
+  workspace_files:
+    sort.py: |
+      def bubble_sort(arr):
+          n = len(arr)
+          for i in range(n):
+              for j in range(0, n - i):
+                  if arr[j] > arr[j + 1]:
+                      arr[j], arr[j + 1] = arr[j + 1], arr[j]
+          return arr
+    test_sort.py: |
+      import sys
+      sys.path.insert(0, '.')
+      from sort import bubble_sort
+
+      assert bubble_sort([]) == [], f"got {bubble_sort([])}"
+      assert bubble_sort([1]) == [1], f"got {bubble_sort([1])}"
+      assert bubble_sort([5, 3, 1, 4, 2]) == [1, 2, 3, 4, 5], f"got {bubble_sort([5, 3, 1, 4, 2])}"
+      assert bubble_sort([1, 2, 3]) == [1, 2, 3], f"got {bubble_sort([1, 2, 3])}"
+      assert bubble_sort([3, 2, 1]) == [1, 2, 3], f"got {bubble_sort([3, 2, 1])}"
+      assert bubble_sort([-1, 5, 2, -3]) == [-3, -1, 2, 5], f"got {bubble_sort([-1, 5, 2, -3])}"
+      print("ALL TESTS PASSED")
+
+scoring:
+  method: functional
+  command: "cd {{workspace}} && python test_sort.py"
+  pass_pattern: "ALL TESTS PASSED"
+
+constraints:
+  max_iterations: 15
+  timeout_seconds: 120

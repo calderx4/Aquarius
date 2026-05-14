@@ -1,0 +1,10 @@
+{
+  "capricorn-x": {
+    "agent_root": "/path/to/Capricorn-x"
+  },
+  "capricorn-v": {
+    "agent_root": "/path/to/Capricorn-v"
+  },
+  "claude-code": {},
+  "hermes": {}
+}

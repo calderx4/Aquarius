@@ -1,0 +1,12 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+*.egg-info/
+dist/
+build/
+baselines/
+!baselines/.gitkeep
+docs
+workspace/
+configs.json

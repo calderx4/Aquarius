@@ -1,0 +1,58 @@
+id: code-file-ops-001
+name: "文件操作 - 批量文件整理"
+category: code
+difficulty: medium
+
+input:
+  prompt: >
+    任务：创建 organize.py 脚本，按文件扩展名整理 data/ 目录下的文件。
+
+    当前 data/ 目录包含：
+    - data/report.txt, data/notes.txt（文本文件）
+    - data/sales.csv, data/users.csv（CSV 文件）
+    - data/config.json, data/meta.json（JSON 文件）
+    - data/readme.md（其他文件）
+
+    要求：
+    - 创建 organize.py 脚本
+    - 脚本运行后创建以下目录并移动文件：
+      - .txt 文件 → data/text/
+      - .csv 文件 → data/csv/
+      - .json 文件 → data/json/
+      - 其他文件 → data/other/
+
+    运行 organize.py 后，运行 test_organize.py 验证结果。
+  workspace_files:
+    organize.py: ""
+    data/report.txt: "Quarterly report content"
+    data/notes.txt: "Meeting notes"
+    data/sales.csv: "id,name,amount\n1,Widget,100\n2,Gadget,200"
+    data/users.csv: "id,name\n1,Alice\n2,Bob"
+    data/config.json: '{"version": "1.0", "debug": false}'
+    data/meta.json: '{"count": 42}'
+    data/readme.md: "# Data Files"
+    test_organize.py: |
+      import os
+
+      expected = {
+          "data/text": {"report.txt", "notes.txt"},
+          "data/csv": {"sales.csv", "users.csv"},
+          "data/json": {"config.json", "meta.json"},
+          "data/other": {"readme.md"},
+      }
+
+      for folder, files in expected.items():
+          assert os.path.isdir(folder), f"Missing directory: {folder}"
+          actual = set(os.listdir(folder))
+          assert actual == files, f"{folder}: expected {files}, got {actual}"
+
+      print("ALL TESTS PASSED")
+
+scoring:
+  method: functional
+  command: "cd {{workspace}} && python organize.py && python test_organize.py"
+  pass_pattern: "ALL TESTS PASSED"
+
+constraints:
+  max_iterations: 15
+  timeout_seconds: 120

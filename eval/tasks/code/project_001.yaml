@@ -1,0 +1,87 @@
+id: code-project-001
+name: "项目构建 - CLI Todo 应用"
+category: code
+difficulty: hard
+
+input:
+  prompt: >
+    任务：构建一个命令行 Todo 应用 todo.py。
+
+    功能要求：
+    - python todo.py add "任务内容" — 添加新任务
+    - python todo.py list — 列出所有任务（格式：[编号] [状态] 任务内容）
+    - python todo.py done <编号> — 标记任务完成
+    - python todo.py delete <编号> — 删除任务
+
+    状态显示规则：
+    - 未完成的任务显示为 [ ]
+    - 已完成的任务显示为 [x]
+    - 编号从 1 开始，按添加顺序排列
+
+    数据存储：
+    - 任务存储在 todos.json 文件中（JSON 数组格式）
+    - 每个任务对象包含：id（整数）、text（字符串）、done（布尔值）
+
+    示例输出：
+    [ ] 1 - Buy milk
+    [x] 2 - Write code
+    [ ] 3 - Read book
+
+    将 todo.py 写入当前目录。完成后运行 test_todo.py 验证。
+  workspace_files:
+    test_todo.py: |
+      import subprocess
+      import sys
+      import json
+      import os
+
+      todos_file = "todos.json"
+      if os.path.exists(todos_file):
+          os.remove(todos_file)
+
+      def run(cmd):
+          r = subprocess.run(
+              [sys.executable, "todo.py"] + cmd,
+              capture_output=True, text=True
+          )
+          assert r.returncode == 0, f"Command failed: {cmd}\nstderr: {r.stderr}"
+          return r.stdout
+
+      # Add tasks
+      out = run(["add", "Buy milk"])
+      out = run(["add", "Write code"])
+      out = run(["add", "Read book"])
+
+      # List
+      out = run(["list"])
+      assert "[ ] Buy milk" in out, f"Expected task in list, got: {out}"
+      assert "[ ] Write code" in out, f"Expected task in list, got: {out}"
+      assert "[ ] Read book" in out, f"Expected task in list, got: {out}"
+
+      # Done
+      run(["done", "2"])
+      out = run(["list"])
+      assert "[x] Write code" in out, f"Expected done task, got: {out}"
+      assert "[ ] Buy milk" in out, f"Other tasks unchanged, got: {out}"
+
+      # Delete
+      run(["delete", "3"])
+      out = run(["list"])
+      assert "Read book" not in out, f"Deleted task should not appear, got: {out}"
+
+      # Verify JSON structure
+      with open(todos_file) as f:
+          data = json.load(f)
+      assert isinstance(data, list)
+      assert all("id" in t and "text" in t and "done" in t for t in data)
+
+      print("ALL TESTS PASSED")
+
+scoring:
+  method: functional
+  command: "cd {{workspace}} && python test_todo.py"
+  pass_pattern: "ALL TESTS PASSED"
+
+constraints:
+  max_iterations: 20
+  timeout_seconds: 180

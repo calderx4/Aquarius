@@ -1,0 +1,51 @@
+id: code-func-gen-002
+name: "函数生成 - 字符串分词器"
+category: code
+difficulty: easy
+
+input:
+  prompt: >
+    任务：创建一个 Python 文件 tokenizer.py，在其中实现 tokenize 函数。
+
+    需求：
+    - 函数名：tokenize
+    - 参数：一个字符串 s
+    - 返回值：分词后的字符串列表
+    - 分词规则：按空白字符和标点符号分割
+      - 标点符号包括：.,!?;:'"()[]{},
+      - 连字符(-)不算标点，应保留
+      - 连续标点视为一个分隔符
+      - 去除空 token
+    - 将文件写入当前目录的 tokenizer.py
+
+    示例：
+    - tokenize("hello world") → ["hello", "world"]
+    - tokenize("hello, world!") → ["hello", "world"]
+    - tokenize("test-case") → ["test-case"]
+    - tokenize("what's up") → ["what", "s", "up"] 或 ["whats", "up"]
+
+    创建完成后运行 test_tokenizer.py 验证结果。
+  workspace_files:
+    test_tokenizer.py: |
+      import sys
+      sys.path.insert(0, '.')
+      from tokenizer import tokenize
+
+      assert tokenize("hello world") == ["hello", "world"], f"got {tokenize('hello world')}"
+      assert tokenize("hello, world!") == ["hello", "world"], f"got {tokenize('hello, world!')}"
+      assert tokenize("a.b.c") == ["a", "b", "c"], f"got {tokenize('a.b.c')}"
+      assert tokenize("  spaces  ") == ["spaces"], f"got {tokenize('  spaces  ')}"
+      assert tokenize("test-case") == ["test-case"], f"got {tokenize('test-case')}"
+      assert tokenize("") == [], f"got {tokenize('')}"
+      assert tokenize("what's up") == ["what", "s", "up"] or tokenize("what's up") == ["whats", "up"], f"got {tokenize('what&apos;s up')}"
+      print("ALL TESTS PASSED")
+
+scoring:
+  method: functional
+  command: "cd {{workspace}} && python test_tokenizer.py"
+  pass_pattern: "all tests passed"
+  case_sensitive: false
+
+constraints:
+  max_iterations: 15
+  timeout_seconds: 120

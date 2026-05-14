@@ -1,0 +1,89 @@
+id: code-refactor-001
+name: "重构 - Spaghetti 代码模块化"
+category: code
+difficulty: hard
+
+input:
+  prompt: >
+    任务：将 messy_code.py 重构为模块化结构。
+
+    当前 messy_code.py 的功能：
+    1. 从硬编码数据中筛选分数 >= 80 的记录
+    2. 根据分数分配等级（A: >=90, B: >=80）
+    3. 按姓名排序后以表格形式输出
+
+    要求：
+    1. 创建 data_processor.py — 包含：
+       - process_data(data) 函数：处理数据，筛选并添加 grade 字段
+    2. 创建 formatter.py — 包含：
+       - format_output(processed) 函数：格式化输出为表格
+    3. 创建 main.py — 调用上述两个模块，完成完整流程
+    4. 最终输出必须与原始 messy_code.py 完全一致
+
+    注意：不要修改 messy_code.py，保持其原样。
+
+    完成后运行 test_refactor.py 验证输出一致性。
+  workspace_files:
+    messy_code.py: |
+      data = [
+          {"name": "Alice", "age": 30, "score": 85},
+          {"name": "Bob", "age": 25, "score": 92},
+          {"name": "Charlie", "age": 35, "score": 78},
+          {"name": "Diana", "age": 28, "score": 95},
+      ]
+
+      results = []
+      for item in data:
+          if item["score"] >= 80:
+              grade = "A" if item["score"] >= 90 else "B"
+              results.append({
+                  "name": item["name"],
+                  "age": item["age"],
+                  "grade": grade,
+              })
+
+      output_lines = []
+      output_lines.append("Name    | Age | Grade")
+      output_lines.append("--------|-----|------")
+      for r in sorted(results, key=lambda x: x["name"]):
+          output_lines.append(f"{r['name']:<8}| {r['age']:<3} | {r['grade']}")
+
+      for line in output_lines:
+          print(line)
+    test_refactor.py: |
+      import subprocess
+      import sys
+
+      # Run original
+      orig = subprocess.run(
+          [sys.executable, "messy_code.py"],
+          capture_output=True, text=True
+      )
+      # Run refactored
+      refactored = subprocess.run(
+          [sys.executable, "main.py"],
+          capture_output=True, text=True
+      )
+
+      assert orig.returncode == 0, f"Original failed: {orig.stderr}"
+      assert refactored.returncode == 0, f"Refactored failed: {refactored.stderr}"
+      assert orig.stdout == refactored.stdout, (
+          f"Output mismatch!\nOriginal:\n{orig.stdout}\nRefactored:\n{refactored.stdout}"
+      )
+
+      # Check files exist
+      import os
+      assert os.path.exists("data_processor.py"), "data_processor.py missing"
+      assert os.path.exists("formatter.py"), "formatter.py missing"
+      assert os.path.exists("main.py"), "main.py missing"
+
+      print("ALL TESTS PASSED")
+
+scoring:
+  method: functional
+  command: "cd {{workspace}} && python test_refactor.py && grep -q 'def process_data' data_processor.py && grep -q 'def format_output' formatter.py"
+  pass_pattern: "ALL TESTS PASSED"
+
+constraints:
+  max_iterations: 20
+  timeout_seconds: 180
